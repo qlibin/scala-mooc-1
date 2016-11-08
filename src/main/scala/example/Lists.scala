@@ -24,11 +24,14 @@ object Lists {
    * @return The sum of all elements in `xs`
    */
     def sum(xs: List[Int]): Int = {
-      if (xs.isEmpty) {
-        0
-      } else {
-        xs.head + sum(xs.tail)
+      @scala.annotation.tailrec
+      def sumTail(xs: List[Int], result: Int): Int = {
+        if (xs.isEmpty)
+          result
+        else
+          sumTail(xs.tail, result + xs.head)
       }
+      sumTail(xs, 0)
     }
   
   /**
@@ -48,15 +51,15 @@ object Lists {
       if (xs.isEmpty) {
         throw new NoSuchElementException("The list is empty")
       }
-      if (xs.size == 1) {
-        return xs.head
+      @scala.annotation.tailrec
+      def maxTail(xs: List[Int], max: Int): Int = {
+        if (xs.isEmpty)
+          max
+        else {
+          val head = xs.head
+          maxTail(xs.tail, if (head > max) head else max)
+        }
       }
-      val head = xs.head
-      val maxOfTheRest = max(xs.tail)
-      if (head > maxOfTheRest) {
-        head
-      } else {
-        maxOfTheRest
-      }
+      maxTail(xs.tail, xs.head)
     }
   }
