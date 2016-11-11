@@ -1,4 +1,4 @@
-# Functional Programming Principles in Scala
+# Functional Programming Principles in Scala (MOOC)
 
 Corse from École Polytechnique Fédérale de Lausanne and coursera.org
 
