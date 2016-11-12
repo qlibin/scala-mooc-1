@@ -81,5 +81,32 @@ object Main {
   /**
    * Exercise 3
    */
-  def countChange(money: Int, coins: List[Int]): Int = ???
+  def countChange(money: Int, coins: List[Int]): Int = {
+    if (money == 0) return 0
+    if (money < 0) throw new IllegalArgumentException
+    def sum(acc: Int, list: List[Int]): Int = {
+      if (list.isEmpty)
+        acc
+      else
+        sum(acc + list.head, list.tail)
+    }
+    def change(combinationsFound: Int, coinsSelected: List[Int]): Int = {
+      val sumCoinsSelected = sum(0, coinsSelected)
+
+      if (sumCoinsSelected == money) {
+//        println(coinsSelected)
+        combinationsFound + 1
+      } else if (sumCoinsSelected < money) {
+        val coinMap = coins.map(coin => {
+          if (coinsSelected.isEmpty || coin >= coinsSelected.head)
+            change(0, List(coin).++(coinsSelected))
+          else
+            0
+        })
+        sum(combinationsFound, coinMap)
+      } else
+        combinationsFound
+    }
+    change(0, List())
+  }
 }
