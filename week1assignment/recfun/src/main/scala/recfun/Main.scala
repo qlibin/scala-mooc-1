@@ -27,9 +27,25 @@ object Main {
    * Exercise 2
    */
   def balance(chars: List[Char]): Boolean = {
+    def hasBalance(chars: List[Char], balance: Int): Boolean = {
+      if (chars.isEmpty)
+        balance == 0
+      else if (balance < 0)
+        false
+      else if (chars.head == '(')
+        hasBalance(chars.tail, balance + 1)
+      else if (chars.head == ')')
+        hasBalance(chars.tail, balance - 1)
+      else
+        hasBalance(chars.tail, balance)
+    }
+    hasBalance(chars, 0)
+  }
+
+  def balance_(chars: List[Char]): Boolean = {
+
     def is_open(c: Char) = c == '('
     def is_close(c: Char) = c == ')'
-    def is_char(c: Char) = !is_open(c) && !is_close(c)
 
     def expectEnd(chars: List[Char]): Boolean = {
       if (chars.isEmpty)
@@ -61,7 +77,7 @@ object Main {
 
     expectEnd(chars)
   }
-  
+
   /**
    * Exercise 3
    */

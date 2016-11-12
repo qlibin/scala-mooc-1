@@ -26,4 +26,12 @@ class BalanceSuite extends FunSuite {
     assert(!balance("())(".toList))
   }
 
+  test("empty list") {
+    assert(balance("".toList))
+  }
+
+  test("List with no parentheses") {
+    assert(balance("dsfsf klk lksadfjlakd asd   ".toList))
+  }
+
 }
