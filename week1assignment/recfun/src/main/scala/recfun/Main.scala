@@ -34,23 +34,29 @@ object Main {
     def expectEnd(chars: List[Char]): Boolean = {
       if (chars.isEmpty)
         true
-      else if (is_open(chars.head))
-        expectEnd(tailAfterClose(chars.tail))
       else if (is_close(chars.head))
         false
       else
-        expectEnd(chars.tail)
+        expectEnd(
+          if (is_open(chars.head))
+            tailAfterClose(chars.tail)
+          else
+            chars.tail
+        )
     }
 
     def tailAfterClose(chars: List[Char]): List[Char] = {
       if (chars.isEmpty)
         throw new IllegalStateException()
-      else if (is_open(chars.head))
-        tailAfterClose(tailAfterClose(chars.tail))
       else if (is_close(chars.head))
         chars.tail
       else
-        tailAfterClose(chars.tail)
+        tailAfterClose(
+          if (is_open(chars.head))
+            tailAfterClose(chars.tail)
+          else
+            chars.tail
+        )
     }
 
     expectEnd(chars)
