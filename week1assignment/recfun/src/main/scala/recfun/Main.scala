@@ -3,7 +3,8 @@ package recfun
 object Main {
   def main(args: Array[String]) {
     println("Pascal's Triangle")
-    for (row <- 0 to 10) {
+    for (row <- 0 to 13) {
+      for (i <- row to 13) print(" ")
       for (col <- 0 to row)
         print(pascal(col, row) + " ")
       println()
@@ -13,15 +14,50 @@ object Main {
   /**
    * Exercise 1
    */
-    def pascal(c: Int, r: Int): Int = ???
+  def pascal(c: Int, r: Int): Int = {
+    if (c < 0 || r < 0 || c > r)
+      0
+    else if (c == 0)
+      1
+    else
+      pascal(c - 1, r - 1) + pascal(c, r - 1)
+  }
   
   /**
    * Exercise 2
    */
-    def balance(chars: List[Char]): Boolean = ???
+  def balance(chars: List[Char]): Boolean = {
+    def is_open(c: Char) = c == '('
+    def is_close(c: Char) = c == ')'
+    def is_char(c: Char) = !is_open(c) && !is_close(c)
+
+    def expectEnd(chars: List[Char]): Boolean = {
+      if (chars.isEmpty)
+        true
+      else if (is_open(chars.head))
+        expectEnd(tailAfterClose(chars.tail))
+      else if (is_close(chars.head))
+        false
+      else
+        expectEnd(chars.tail)
+    }
+
+    def tailAfterClose(chars: List[Char]): List[Char] = {
+      if (chars.isEmpty)
+        throw new IllegalStateException()
+      else if (is_open(chars.head))
+        tailAfterClose(tailAfterClose(chars.tail))
+      else if (is_close(chars.head))
+        chars.tail
+      else
+        tailAfterClose(chars.tail)
+    }
+
+    expectEnd(chars)
+  }
   
   /**
    * Exercise 3
    */
-    def countChange(money: Int, coins: List[Int]): Int = ???
-  }
+  def countChange(money: Int, coins: List[Int]): Int = ???
+}

@@ -26,14 +26,14 @@ Write a recursive function which verifies the balancing of parentheses in a stri
 * (if (zero? x) max (/ 1 x))
 * I told him (that it’s not (yet) done). (But he wasn’t listening)
 
-The function should return false for the following strings:
+The function should return `false` for the following strings:
 
 * :-)
 * ())(
 
 The last example shows that it’s not enough to verify that a string contains the same number of opening and closing parentheses.
 
-Do this exercise by implementing the balance function in Main.scala. Its signature is as follows:
+Do this exercise by implementing the balance function in `Main.scala`. Its signature is as follows:
 
 ```scala
 def balance(chars: List[Char]): Boolean
@@ -47,7 +47,7 @@ There are three methods on `List[Char]` that are useful for this exercise:
 
 **Hint**: you can define an inner function if you need to pass extra parameters to your function.
 
-**Testing**: You can use the `toList` method to convert from a `String` to `aList[Char]`: e.g. `"(just an) example".toList`.
+**Testing**: You can use the `toList` method to convert from a `String` to a `List[Char]`: e.g. `"(just an) example".toList`.
 
 ## Exercise 3: Counting Change
 
