@@ -83,30 +83,26 @@ object Main {
    */
   def countChange(money: Int, coins: List[Int]): Int = {
     if (money == 0) return 0
-    if (money < 0) throw new IllegalArgumentException
+    if (money < 0) throw new IllegalArgumentException("Money can not be negative")
+    if (coins.count(coin => coin <= 0) > 0) throw new IllegalArgumentException("Coins can not be negative")
     def sum(acc: Int, list: List[Int]): Int = {
       if (list.isEmpty)
         acc
       else
         sum(acc + list.head, list.tail)
     }
-    def change(combinationsFound: Int, coinsSelected: List[Int]): Int = {
-      val sumCoinsSelected = sum(0, coinsSelected)
-
+    def change(combinationsFound: Int, sumCoinsSelected: Int, lastCoinSelected: Int): Int = {
       if (sumCoinsSelected == money) {
-//        println(coinsSelected)
         combinationsFound + 1
       } else if (sumCoinsSelected < money) {
-        val coinMap = coins.map(coin => {
-          if (coinsSelected.isEmpty || coin >= coinsSelected.head)
-            change(0, List(coin).++(coinsSelected))
-          else
-            0
+        val coinsNotLessThanTheLatsOne = coins.filter(coin => coin >= lastCoinSelected)
+        val combinationsCountForDifferentChoices = coinsNotLessThanTheLatsOne.map(coin => {
+          change(0, sumCoinsSelected + coin, coin)
         })
-        sum(combinationsFound, coinMap)
+        sum(combinationsFound, combinationsCountForDifferentChoices)
       } else
         combinationsFound
     }
-    change(0, List())
+    change(0, 0, -1)
   }
 }
