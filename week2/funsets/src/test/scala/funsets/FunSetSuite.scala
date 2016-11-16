@@ -165,5 +165,18 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("forall works as expected") {
+    new TestSets {
+      forall(even, (x: Int) => x > -10 && x < 10)
+      assert(!forall(even, (x: Int) => x > -10 && x < 10))
+      assert(!forall(odd, (x: Int) => x > -10 && x < 10))
+      assert(!forall(rating10, (x: Int) => x > 5 && x < 10))
+      assert(forall(rating10, (x: Int) => x > -5 && x < 100))
+      assert(forall(negative, (x: Int) => x < 0))
+      assert(forall(positive, (x: Int) => x >= 0))
+      assert(!forall(positive, (x: Int) => x > 1))
+    }
+  }
+
 
 }
