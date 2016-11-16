@@ -77,6 +77,13 @@ class FunSetSuite extends FunSuite {
     val s1 = singletonSet(1)
     val s2 = singletonSet(2)
     val s3 = singletonSet(3)
+    val negative = (x: Int) => x < 0
+    val positive = (x: Int) => x > 0
+    val even = (x: Int) => x % 2 == 0
+    val odd = (x: Int) => x % 2 != 0
+    val kelvin = (x: Int) => x >= -273
+    val rating5 = (x: Int) => x >= 0 && x <= 5
+    val rating10 = (x: Int) => x >= 0 && x <= 10
   }
 
   /**
@@ -98,6 +105,8 @@ class FunSetSuite extends FunSuite {
        * the test fails. This helps identifying which assertion failed.
        */
       assert(contains(s1, 1), "Singleton")
+      assert(!contains(s1, 2), "2 is not 1")
+      assert(!contains(s1, 0), "0 is not 1")
     }
   }
 
@@ -107,6 +116,52 @@ class FunSetSuite extends FunSuite {
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
+    }
+  }
+
+  test("intersect contains only elements containing in both sets") {
+    new TestSets {
+      val s = intersect(negative, kelvin)
+      assert(contains(s, -273), "has -273")
+      assert(!contains(s, 273), "hasn't 273")
+      assert(!contains(s, 2), "hasn't 2")
+      assert(!contains(s, 0), "hasn't 0")
+      assert(contains(s, -1), "has -1")
+      assert(contains(s, -100), "has -100")
+    }
+  }
+
+  test("diff contains only elements containing in first set and not in second set") {
+    new TestSets {
+      val s = diff(rating10, rating5)
+      assert(!contains(s, 11))
+      assert(contains(s, 10))
+      assert(contains(s, 9))
+      assert(contains(s, 8))
+      assert(contains(s, 7))
+      assert(contains(s, 6))
+      assert(!contains(s, 5))
+      assert(!contains(s, 4))
+      assert(!contains(s, 3))
+      assert(!contains(s, 0))
+      assert(!contains(s, -1))
+    }
+  }
+
+  test("filter contains only elements containing in set and not hold condition from predicate") {
+    new TestSets {
+      val s = filter(positive, (x: Int) => x > 7 && x < 10)
+      assert(!contains(s, -1))
+      assert(!contains(s, 10))
+      assert(contains(s, 9))
+      assert(contains(s, 8))
+      assert(!contains(s, 7))
+      assert(!contains(s, 6))
+      assert(!contains(s, 5))
+      assert(!contains(s, 4))
+      assert(!contains(s, 3))
+      assert(!contains(s, 0))
+      assert(!contains(s, -1))
     }
   }
 
