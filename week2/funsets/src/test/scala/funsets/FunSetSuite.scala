@@ -196,5 +196,18 @@ class FunSetSuite extends FunSuite {
     }
   }
 
+  test("map works as expected") {
+    val _123 = (x: Int) => x >= 1 && x <= 3
+
+    new TestSets {
+      assert(funsets.FunSets.toString(map(_123, x => x)) === "{1,2,3}")
+      assert(funsets.FunSets.toString(map(_123, x => -x)) === "{-3,-2,-1}")
+      assert(funsets.FunSets.toString(map(_123, x => x-x)) === "{0}")
+      assert(funsets.FunSets.toString(map(_123, x => x+x)) === "{2,4,6}")
+      assert(funsets.FunSets.toString(map(_123, x => x*x)) === "{1,4,9}")
+      assert(funsets.FunSets.toString(map(_123, x => x-1)) === "{0,1,2}")
+    }
+  }
+
 
 }
