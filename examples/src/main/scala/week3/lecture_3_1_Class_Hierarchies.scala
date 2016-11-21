@@ -1,9 +1,12 @@
+package week3
+
 object lecture_3_1_Class_Hierarchies {
   def main(args: Array[String]): Unit = {
     val t1 = new NonEmpty(3, Empty, Empty)
     val t2 = t1.incl(7).incl(1).incl(5).incl(2).incl(3)
     val t3 = new NonEmpty(4, Empty, Empty).incl(6).incl(9)
-    println(t3)
+    println(t2 union t3)
+    println(t3 union t2)
   }
 }
 
