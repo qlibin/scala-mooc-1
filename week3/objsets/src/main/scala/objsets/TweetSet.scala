@@ -66,8 +66,9 @@ abstract class TweetSet {
    * Question: Should we implement this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def mostRetweeted: Tweet = ???
-  
+  def mostRetweeted: Tweet
+  def mostRetweetedAcc(acc: Tweet): Tweet
+
   /**
    * Returns a list containing all tweets of this set, sorted by retweet count
    * in descending order. In other words, the head of the resulting list should
@@ -77,8 +78,9 @@ abstract class TweetSet {
    * Question: Should we implement this method here, or should it remain abstract
    * and be implemented in the subclasses?
    */
-    def descendingByRetweet: TweetList = ???
-  
+  def descendingByRetweet: TweetList = descendingByRetweetAcc(Nil)
+  def descendingByRetweetAcc(acc: TweetList): TweetList
+
   /**
    * The following methods are already implemented
    */
@@ -124,6 +126,14 @@ class Empty extends TweetSet {
   def foreach(f: Tweet => Unit): Unit = ()
 
   override def union(that: TweetSet): TweetSet = that
+
+  override def mostRetweeted: Tweet = throw new NoSuchElementException
+
+  override def mostRetweetedAcc(acc: Tweet): Tweet = acc
+
+  override def descendingByRetweetAcc(acc: TweetList): TweetList = acc
+
+  override def toString = "."
 }
 
 class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
@@ -162,6 +172,22 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   override def union(that: TweetSet): TweetSet =
     ((right union left) union that) incl elem
 
+  override def mostRetweeted: Tweet = mostRetweetedAcc(elem)
+
+  def mostRetweetedOf(one: Tweet, another: Tweet): Tweet =
+    if (one.retweets > another.retweets) one else another
+
+  def mostRetweetedAcc(previousMostRetweeted: Tweet): Tweet = {
+    val mostRetweeted = mostRetweetedOf(elem, previousMostRetweeted)
+    right.mostRetweetedAcc(left.mostRetweetedAcc(mostRetweeted))
+  }
+
+  override def descendingByRetweetAcc(acc: TweetList): TweetList = {
+    val max = mostRetweeted
+    new Cons(max, remove(max).descendingByRetweetAcc(acc))
+  }
+
+  override def toString = "{" + left + elem + right + "}"
 }
 
 trait TweetList {
