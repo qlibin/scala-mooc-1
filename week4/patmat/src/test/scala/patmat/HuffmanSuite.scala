@@ -18,6 +18,7 @@ class HuffmanSuite extends FunSuite {
   test("weight of a larger tree") {
     new TestTrees {
       assert(weight(t1) === 5)
+      assert(weight(t2) === 9)
     }
   }
 
@@ -26,6 +27,10 @@ class HuffmanSuite extends FunSuite {
     new TestTrees {
       assert(chars(t2) === List('a','b','d'))
     }
+  }
+
+  test("times calculates correct values") {
+    assert(times(List('a', 'b', 'a')) === List(('a', 2), ('b', 1)))
   }
 
 
@@ -44,6 +49,14 @@ class HuffmanSuite extends FunSuite {
     assert(combine(leaflist) === List(Fork(Leaf('e',1),Leaf('t',2),List('e', 't'),3), Leaf('x',4)))
   }
 
+  test("hoffman tree computed correctly") {
+    assert(createCodeTree(string2Chars("bbc")) === Fork(Leaf('c',1),Leaf('b',2),List('c', 'b'),3))
+  }
+
+
+  test("decode secret") {
+    assert(String.valueOf(decodedSecret.toArray) === "huffmanestcool")
+  }
 
   test("decode and encode a very short text should be identity") {
     new TestTrees {
