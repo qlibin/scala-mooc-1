@@ -64,4 +64,8 @@ class HuffmanSuite extends FunSuite {
     }
   }
 
+  test("decode and encode `huffmanestcool` should be identity") {
+    assert(decode(frenchCode, encode(frenchCode)("huffmanestcool".toList)) === "huffmanestcool".toList)
+  }
+
 }

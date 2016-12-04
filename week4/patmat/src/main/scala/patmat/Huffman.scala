@@ -189,21 +189,6 @@ object Huffman {
       }
     decodeRest(tree, bits, Nil)
   }
-  
-  def decode_(tree: CodeTree, bits: List[Bit]): List[Char] = {
-    def decodeRest(branch: CodeTree, bits: List[Bit], decoded: List[Char]): List[Char] = {
-      if (bits == Nil)
-        decoded
-      else
-        branch match {
-          case Leaf(char, _) => decodeRest(tree, bits, decoded ::: List(char))
-          case Fork(left, right, _, _) =>
-            if (bits.head == 0) decodeRest(left, bits.tail, decoded)
-            else decodeRest(right, bits.tail, decoded)
-        }
-    }
-    decodeRest(tree, bits, Nil)
-  }
 
   /**
    * A Huffman coding tree for the French language.
@@ -230,7 +215,26 @@ object Huffman {
    * This function encodes `text` using the code tree `tree`
    * into a sequence of bits.
    */
-    def encode(tree: CodeTree)(text: List[Char]): List[Bit] = ???
+  def encode(tree: CodeTree)(text: List[Char]): List[Bit] = {
+    def hasChar(node: CodeTree, char: Char) =
+      node match {
+        case Leaf(c, _) => c == char
+        case Fork(_, _, chars, _) => chars.contains(char)
+      }
+    def encodeRest(branch: CodeTree, text: List[Char], code: List[Bit]): List[Bit] = {
+      text match {
+        case Nil => code
+        case headChar :: restOfTheText =>
+          branch match {
+            case Leaf(_, _) => encodeRest(tree, restOfTheText, code)
+            case Fork(left, right, chars, _) =>
+              if (hasChar(left, headChar)) encodeRest(left, text, code ::: List(0))
+              else encodeRest(right, text, code ::: List(1))
+          }
+      }
+    }
+    encodeRest(tree, text, Nil)
+  }
   
   // Part 4b: Encoding using code table
 
