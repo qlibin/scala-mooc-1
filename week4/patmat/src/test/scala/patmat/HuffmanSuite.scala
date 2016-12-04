@@ -68,4 +68,20 @@ class HuffmanSuite extends FunSuite {
     assert(decode(frenchCode, encode(frenchCode)("huffmanestcool".toList)) === "huffmanestcool".toList)
   }
 
+  test("test codeBits") {
+    val codeTable: CodeTable = List(('a', List(1,0)), ('b', List(0,1)), ('c', List(1,1)))
+    def testCodeBits: Char => List[Bit] = codeBits(codeTable)
+    assert(testCodeBits('b') === List(0, 1))
+  }
+
+  test("test convert") {
+    new TestTrees {
+      assert(convert(t1) === List(('a', List(0)), ('b', List(1))))
+    }
+  }
+
+  test("quickEncode works") {
+    assert(decode(frenchCode, encode(frenchCode)("huffmanestcool".toList)) === "huffmanestcool".toList)
+  }
+
 }
