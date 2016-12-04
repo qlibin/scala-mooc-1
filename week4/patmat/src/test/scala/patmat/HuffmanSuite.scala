@@ -84,4 +84,17 @@ class HuffmanSuite extends FunSuite {
     assert(decode(frenchCode, encode(frenchCode)("huffmanestcool".toList)) === "huffmanestcool".toList)
   }
 
+  test("singleton works for non empty list") {
+    new TestTrees {
+      assert(singleton(List(t1, t2)) === false)
+      assert(singleton(List(t1)) === true)
+    }
+  }
+
+  test("singleton on nil") {
+    new TestTrees {
+      assert(singleton(Nil) === false)
+    }
+  }
+
 }
