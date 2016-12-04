@@ -1,4 +1,4 @@
-package week4
+package week4.bool
 
 // Lecture 1
 abstract class Boolean {
