@@ -64,7 +64,7 @@ object Anagrams {
     dictionary
       .foldRight(result)((word, result) => {
         val occurrences = wordOccurrences(word)
-        result.updated(occurrences, word :: result(occurrences))
+        result + (occurrences -> (word :: result(occurrences)))
       })
   }
 
