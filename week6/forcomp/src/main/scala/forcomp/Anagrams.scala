@@ -94,7 +94,20 @@ object Anagrams {
    *  Note that the order of the occurrence list subsets does not matter -- the subsets
    *  in the example above could have been displayed in some other order.
    */
-  def combinations(occurrences: Occurrences): List[Occurrences] = ???
+  def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
+    case Nil => List(Nil)
+    case (char, cnt) :: rest =>
+      val newCombinations = for ((char, cnt) <- occurrences; i <- 1 to cnt)
+        yield occurrences.map((tuple: (Char, Int)) => tuple match {
+          case (ch, n) => if (ch == char) (ch, n - i) else (ch, n)
+        }).filter((tuple: (Char, Int)) => tuple match {
+          case (_, n) => n > 0
+        })
+      (List() :: newCombinations.filter(occ => occ != Nil).foldLeft(occurrences :: Nil)((newAcc: List[Occurrences], occ: Occurrences) => {
+        newAcc ++ combinations(occ)
+      })).distinct
+  } // TODO: this is awful. I should redo this...
+
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
    *
@@ -106,7 +119,14 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = ???
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    x.foldRight(List[(Char, Int)]())((occ: (Char, Int), list: Occurrences) => {
+      y.filter((o: (Char, Int)) => o._1 == occ._1) match {
+        case Nil => occ :: list
+        case (ch, n) :: xs => if (n >= occ._2) list else (ch, occ._2 - n) :: list
+      }
+    })
+  } // TODO: I should make it more clear. This looks ugly
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
@@ -148,5 +168,13 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???/*{ Shame! Shame! Shame!
+    val sentenceOcc = sentenceOccurrences(sentence)
+    val combs = combinations(sentenceOcc)
+    val meaningfullCombinations = combs.filter((occurrences: Occurrences) => dictionaryByOccurrences.get(occurrences).isDefined)
+    def findAnagrams(occurances: Occurrences, acc: List[Occurrences]): List[Occurrences] = {
+      for (mComb <- meaningfullCombinations; subtract(sentenceOcc, mComb))
+    }
+    findAnagrams(sentenceOcc, List[Occurrences]()).map((occurrences: Occurrences) => dictionaryByOccurrences.get(occurrences))
+  }*/ // TODO: complete this assignment you must!
 }
