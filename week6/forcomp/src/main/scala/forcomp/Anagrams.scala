@@ -97,9 +97,9 @@ object Anagrams {
   def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
     case Nil => List(Nil)
     case (char, cnt) :: rest =>
-      val newCombinations = for ((char, cnt) <- occurrences; i <- 1 to cnt)
+      val newCombinations = for ((char, cnt) <- occurrences)
         yield occurrences.map((tuple: (Char, Int)) => tuple match {
-          case (ch, n) => if (ch == char) (ch, n - i) else (ch, n)
+          case (ch, n) => if (ch == char) (ch, n - 1) else (ch, n)
         }).filter((tuple: (Char, Int)) => tuple match {
           case (_, n) => n > 0
         })
@@ -120,10 +120,10 @@ object Anagrams {
    *  and has no zero-entries.
    */
   def subtract(x: Occurrences, y: Occurrences): Occurrences = {
-    x.foldRight(List[(Char, Int)]())((occ: (Char, Int), list: Occurrences) => {
-      y.filter((o: (Char, Int)) => o._1 == occ._1) match {
-        case Nil => occ :: list
-        case (ch, n) :: xs => if (n >= occ._2) list else (ch, occ._2 - n) :: list
+    x.foldRight(List[(Char, Int)]())((x_occ: (Char, Int), list: Occurrences) => x_occ match {
+      case (x_ch, x_n) => y.filter({case (y_ch, _) => y_ch == x_ch}) match {
+        case Nil => x_occ :: list
+        case (y_ch, y_n) :: xs => if (y_n >= x_n) list else (y_ch, x_n - y_n) :: list
       }
     })
   } // TODO: I should make it more clear. This looks ugly
