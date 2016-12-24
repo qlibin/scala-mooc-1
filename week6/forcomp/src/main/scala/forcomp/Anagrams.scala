@@ -120,13 +120,11 @@ object Anagrams {
    *  and has no zero-entries.
    */
   def subtract(x: Occurrences, y: Occurrences): Occurrences = {
-    x.foldRight(List[(Char, Int)]())((x_occ: (Char, Int), list: Occurrences) => x_occ match {
-      case (x_ch, x_n) => y.filter({case (y_ch, _) => y_ch == x_ch}) match {
-        case Nil => x_occ :: list
-        case (y_ch, y_n) :: xs => if (y_n >= x_n) list else (y_ch, x_n - y_n) :: list
-      }
-    })
-  } // TODO: I should make it more clear. This looks ugly
+    x.map({ case (x_ch, x_n) => (x_ch,
+          x_n - y.find({case (y_ch, _) => y_ch == x_ch})
+            .map({case (_, y_n) => y_n}).getOrElse(0))
+    }).filter({ case (_, x_n) => x_n > 0})
+  }
 
   /** Returns a list of all anagram sentences of the given sentence.
    *
