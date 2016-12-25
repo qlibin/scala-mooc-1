@@ -1,3 +1,22 @@
+val listOfLists = List(List("sane", "qw"), List("my"), List("tt", "ii"))
+//listOfLists.foldRight(List[Sentence]())((sentences: List[Sentence], options: List[Word]) => {
+//    sentences ++ options.map(word => )
+//})
+
+listOfLists.zipWithIndex
+
+def combs(listsWithIndex: List[(List[Word], Int)]): List[Sentence] = listsWithIndex match {
+  case Nil => List(Nil)
+  case (options, index) :: rest =>
+    for {
+      restCombinations <- combs(rest)
+      word <- options
+    } yield word :: restCombinations
+}
+
+combs(listOfLists.zipWithIndex)
+
+
 "Groovy".groupBy(c => c.toLower).map((tuple: (Char, String)) => (tuple._1, tuple._2.length)).toList
 
 

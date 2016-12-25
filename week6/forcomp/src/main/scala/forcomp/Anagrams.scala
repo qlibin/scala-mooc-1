@@ -21,6 +21,7 @@ object Anagrams {
    *  in the list.
    */
   type Occurrences = List[(Char, Int)]
+  type WordChars = Occurrences
 
   /** The dictionary is simply a sequence of words.
    *  It is predefined and obtained as a sequence using the utility method `loadDictionary`.
@@ -36,9 +37,9 @@ object Anagrams {
    */
   def wordOccurrences(w: Word): Occurrences =
     w.groupBy(char => char.toLower)
-      .map((tuple: (Char, String)) => (tuple._1, tuple._2.length))
+      .map({ case (char, str) => (char, str.length)})
       .toList
-      .sortBy((tuple: (Char, Int)) => tuple._1)
+      .sortBy({case (char, _) => char})
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences =
@@ -97,16 +98,11 @@ object Anagrams {
   def combinations(occurrences: Occurrences): List[Occurrences] = occurrences match {
     case Nil => List(Nil)
     case (char, cnt) :: rest =>
-      val newCombinations = for ((char, cnt) <- occurrences)
-        yield occurrences.map((tuple: (Char, Int)) => tuple match {
-          case (ch, n) => if (ch == char) (ch, n - 1) else (ch, n)
-        }).filter((tuple: (Char, Int)) => tuple match {
-          case (_, n) => n > 0
-        })
-      (List() :: newCombinations.filter(occ => occ != Nil).foldLeft(occurrences :: Nil)((newAcc: List[Occurrences], occ: Occurrences) => {
-        newAcc ++ combinations(occ)
-      })).distinct
-  } // TODO: this is awful. I should redo this...
+      for {
+        restCombinations <- combinations(rest)
+        i <- 0 to cnt
+      } yield if (i == 0) restCombinations else (char, i) :: restCombinations
+  }
 
 
   /** Subtracts occurrence list `y` from occurrence list `x`.
@@ -166,13 +162,48 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???/*{ Shame! Shame! Shame!
-    val sentenceOcc = sentenceOccurrences(sentence)
-    val combs = combinations(sentenceOcc)
-    val meaningfullCombinations = combs.filter((occurrences: Occurrences) => dictionaryByOccurrences.get(occurrences).isDefined)
-    def findAnagrams(occurances: Occurrences, acc: List[Occurrences]): List[Occurrences] = {
-      for (mComb <- meaningfullCombinations; subtract(sentenceOcc, mComb))
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] = {
+    val sentenceOcc: WordChars = sentenceOccurrences(sentence)
+    def getMeaningfulCombinations(sentenceOcc: WordChars): List[WordChars] = {
+      combinations(sentenceOcc).filter((occurrences: WordChars) =>
+        dictionaryByOccurrences.get(occurrences).isDefined)
     }
-    findAnagrams(sentenceOcc, List[Occurrences]()).map((occurrences: Occurrences) => dictionaryByOccurrences.get(occurrences))
-  }*/ // TODO: complete this assignment you must!
+    def findAnagrams(remainingChars: WordChars, acc: List[WordChars], result: List[List[WordChars]]): List[List[WordChars]] = {
+      val availableCombinations = getMeaningfulCombinations(remainingChars)
+      if (availableCombinations.isEmpty)
+        if (remainingChars.isEmpty)
+          acc :: result
+        else
+          result
+      else
+        if (remainingChars.isEmpty)
+          findAnagrams(sentenceOcc, List(), result)
+        else
+          availableCombinations.foldLeft(result)((result, nextCombination) => {
+            findAnagrams(subtract(remainingChars, nextCombination), nextCombination :: acc, result)
+          })
+    }
+    val allAnagramsOptions: List[List[List[Word]]] =
+      findAnagrams(sentenceOcc, List[WordChars](), List[List[WordChars]]())
+        .map((combination: List[WordChars]) => combination.map((o: WordChars) => dictionaryByOccurrences(o)))
+
+    for (anagramOptions: List[List[Word]] <- allAnagramsOptions; combination <- combineOptionsToSentences(anagramOptions.zipWithIndex))
+          yield combination
+  }
+
+  /*
+    combineLists([[men], [say]])
+      === [[men, say]]
+    combineLists([[sane, Sean], [my]])
+      === [[sane, my], [Sean, my]]
+   */
+  def combineOptionsToSentences(listsWithIndex: List[(List[Word], Int)]): List[Sentence] = listsWithIndex match {
+    case Nil => List(Nil)
+    case (options, index) :: rest =>
+      for {
+        restCombinations <- combineOptionsToSentences(rest)
+        word <- options
+      } yield word :: restCombinations
+  }
+
 }
